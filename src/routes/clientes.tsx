@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { CalendarClock, CircleDollarSign, Pencil, Plus, Search, Sparkles, Trash2 } from "lucide-react";
+import { CalendarClock, Pencil, Plus, Search, Sparkles, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout, Card } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";

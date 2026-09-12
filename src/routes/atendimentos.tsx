@@ -105,23 +105,23 @@ function AtendimentosPage() {
         </div>
       </Card>
 
-      <div className="mt-5 grid gap-4 sm:grid-cols-3">
-        <Card>
+      <div className="mt-5 grid overflow-hidden rounded-xl border border-border bg-card shadow-[var(--shadow-card)] sm:grid-cols-3">
+        <div className="border-b border-border p-5 sm:border-r sm:border-b-0">
           <p className="text-xs tracking-wider text-muted-foreground uppercase">
             Total filtrado
           </p>
           <p className="mt-2 font-display text-3xl font-semibold">{brl(total)}</p>
-        </Card>
-        <Card>
+        </div>
+        <div className="border-b border-border p-5 sm:border-r sm:border-b-0">
           <p className="text-xs tracking-wider text-muted-foreground uppercase">Atendimentos</p>
           <p className="mt-2 font-display text-3xl font-semibold">{lista.length}</p>
-        </Card>
-        <Card>
+        </div>
+        <div className="p-5">
           <p className="text-xs tracking-wider text-muted-foreground uppercase">Ticket médio</p>
           <p className="mt-2 font-display text-3xl font-semibold">
             {brl(lista.length ? total / lista.length : 0)}
           </p>
-        </Card>
+        </div>
       </div>
 
       <Card className="mt-5 overflow-x-auto p-0">

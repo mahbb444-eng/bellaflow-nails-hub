@@ -3,7 +3,7 @@
 - [x] Atualizar identidade visual e navegação
 - [x] Aprimorar Dashboard
 - [x] Enriquecer Clientes e drawer
-- [ ] Refinar Agenda e confirmações
-- [ ] Completar Atendimentos e Financeiro
-- [ ] Organizar Configurações
+- [x] Refinar Agenda e confirmações
+- [x] Completar Atendimentos e Financeiro
+- [x] Organizar Configurações
 - [ ] Verificar desktop e celular
