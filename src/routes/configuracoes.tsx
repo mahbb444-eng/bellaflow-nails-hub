@@ -141,7 +141,10 @@ function ConfiguracoesPage() {
             </div>
             <Button
               onClick={() => {
-                if (!novo.nome.trim()) return toast.error("Informe o nome do serviço");
+                if (!novo.nome.trim()) {
+                  toast.error("Informe o nome do serviço");
+                  return;
+                }
                 salvarServico(novo);
                 setNovo({ nome: "", preco: 0, duracao: 60 });
                 toast.success("Serviço adicionado");

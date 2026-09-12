@@ -130,10 +130,10 @@ export function gerarClientes(): Cliente[] {
     telefone: `(11) 9${pad(8 + (i % 2))}${String(1000 + i * 137).slice(0, 3)}-${String(
       2000 + i * 311,
     ).slice(0, 4)}`,
-    instagram: `@${nome.split(" ")[0].toLowerCase()}.${nome.split(" ")[1].toLowerCase()}`,
+    instagram: `@${nome.split(" ")[0]!.toLowerCase()}.${nome.split(" ")[1]!.toLowerCase()}`,
     nascimento: `19${85 + (i % 12)}-${pad(((i * 3) % 12) + 1)}-${pad(((i * 5) % 27) + 1)}`,
-    preferencia: PREFERENCIAS[i % PREFERENCIAS.length],
-    observacoes: OBS_CLIENTE[i % OBS_CLIENTE.length],
+    preferencia: PREFERENCIAS[i % PREFERENCIAS.length]!,
+    observacoes: OBS_CLIENTE[i % OBS_CLIENTE.length]!,
   }));
 }
 
@@ -143,7 +143,7 @@ export function gerarAgendamentos(hoje: Date): Agendamento[] {
   const lista: Agendamento[] = [];
   const statusCiclo: Status[] = ["Agendado", "Confirmado", "Confirmado", "Agendado", "Cancelado"];
   for (let i = 0; i < 18; i++) {
-    const s = SERVICOS_PADRAO[i % SERVICOS_PADRAO.length];
+    const s = SERVICOS_PADRAO[i % SERVICOS_PADRAO.length]!;
     const d = new Date(hoje);
     // 6 hoje, os demais espalhados nos próximos 12 dias
     d.setDate(hoje.getDate() + (i < 6 ? 0 : ((i - 6) % 12) + 1));
@@ -152,11 +152,11 @@ export function gerarAgendamentos(hoje: Date): Agendamento[] {
       clienteId: `c${(i % 12) + 1}`,
       servico: s.nome,
       data: toISO(d),
-      hora: HORAS[i % HORAS.length],
+      hora: HORAS[i % HORAS.length]!,
       duracao: s.duracao,
       valor: s.preco,
       observacoes: i % 4 === 0 ? "Trazer referência de decoração." : "",
-      status: i < 3 ? "Confirmado" : statusCiclo[i % statusCiclo.length],
+      status: i < 3 ? "Confirmado" : statusCiclo[i % statusCiclo.length]!,
     });
   }
   return lista;
@@ -165,7 +165,7 @@ export function gerarAgendamentos(hoje: Date): Agendamento[] {
 export function gerarAtendimentos(hoje: Date): Atendimento[] {
   const lista: Atendimento[] = [];
   for (let i = 0; i < 24; i++) {
-    const s = SERVICOS_PADRAO[(i * 2 + 1) % SERVICOS_PADRAO.length];
+    const s = SERVICOS_PADRAO[(i * 2 + 1) % SERVICOS_PADRAO.length]!;
     const d = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
     d.setDate(d.getDate() - (3 + i * 7)); // últimos ~6 meses
     lista.push({
@@ -173,7 +173,7 @@ export function gerarAtendimentos(hoje: Date): Atendimento[] {
       clienteId: `c${((i * 5) % 12) + 1}`,
       servico: s.nome,
       data: toISO(d),
-      hora: HORAS[i % HORAS.length],
+      hora: HORAS[i % HORAS.length]!,
       valor: s.preco + (i % 3) * 10,
       observacoes: i % 5 === 0 ? "Cliente elogiou o acabamento." : "",
     });

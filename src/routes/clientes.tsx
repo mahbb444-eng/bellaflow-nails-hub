@@ -209,7 +209,10 @@ function ClientesPage() {
             </Button>
             <Button
               onClick={() => {
-                if (!form?.nome.trim()) return toast.error("Informe o nome da cliente");
+                if (!form?.nome.trim()) {
+                  toast.error("Informe o nome da cliente");
+                  return;
+                }
                 salvarCliente(form);
                 setForm(null);
                 toast.success("Cliente salva");

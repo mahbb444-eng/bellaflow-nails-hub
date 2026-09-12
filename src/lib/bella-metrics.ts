@@ -8,7 +8,7 @@ export function faturamentoPorMes(atendimentos: Atendimento[], meses = 6, ref = 
     const valor = atendimentos
       .filter((a) => a.data.slice(0, 7) === chave)
       .reduce((s, a) => s + a.valor, 0);
-    out.push({ mes: MESES[d.getMonth()], valor });
+    out.push({ mes: MESES[d.getMonth()]!, valor });
   }
   return out;
 }

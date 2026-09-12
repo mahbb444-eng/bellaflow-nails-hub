@@ -84,8 +84,8 @@ function AgendaPage() {
 
   const periodo =
     modo === "dia"
-      ? dataBR(dias[0])
-      : `${dataBR(dias[0])} — ${dataBR(dias[dias.length - 1])}`;
+      ? dataBR(dias[0]!)
+      : `${dataBR(dias[0]!)} — ${dataBR(dias[dias.length - 1]!)}`;
 
   return (
     <AppLayout
@@ -116,7 +116,7 @@ function AgendaPage() {
           <Button variant="outline" size="icon" onClick={() => setOffset((o) => o + 1)}>
             <ChevronRight className="size-4" />
           </Button>
-          <Button onClick={() => novo(dias[0], "09:00")} className="rounded-xl">
+          <Button onClick={() => novo(dias[0]!, "09:00")} className="rounded-xl">
             <Plus className="size-4" /> Agendar
           </Button>
         </div>
@@ -314,7 +314,10 @@ function AgendaPage() {
             <Button
               onClick={() => {
                 if (!form) return;
-                if (!form.clienteId) return toast.error("Cadastre uma cliente primeiro");
+                if (!form.clienteId) {
+                  toast.error("Cadastre uma cliente primeiro");
+                  return;
+                }
                 salvarAgendamento(form);
                 setForm(null);
                 toast.success("Agendamento salvo");
