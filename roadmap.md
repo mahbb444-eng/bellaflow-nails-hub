@@ -6,4 +6,4 @@
 - [x] Refinar Agenda e confirmações
 - [x] Completar Atendimentos e Financeiro
 - [x] Organizar Configurações
-- [ ] Verificar desktop e celular
+- [x] Verificar desktop e celular
