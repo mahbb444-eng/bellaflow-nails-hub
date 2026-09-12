@@ -1,4 +1,5 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   CalendarDays,
   LayoutDashboard,
@@ -8,10 +9,14 @@ import {
   Wallet,
   ClipboardList,
   Menu,
+  LogOut,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useBella } from "@/lib/bella-store";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth-context";
 
 const itens = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -24,6 +29,9 @@ const itens = [
 
 function Nav({ onNavigate }: { onNavigate?: () => void }) {
   const { perfil } = useBella();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const iniciais = perfil.nome
     .split(" ")
     .slice(0, 2)
@@ -61,10 +69,11 @@ function Nav({ onNavigate }: { onNavigate?: () => void }) {
         <span className="flex size-10 items-center justify-center rounded-full bg-primary text-sm font-medium text-primary-foreground">
           {iniciais}
         </span>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium">{perfil.nome}</p>
-          <p className="truncate text-xs text-muted-foreground">{perfil.instagram}</p>
+          <p className="truncate text-xs text-muted-foreground">{user?.email ?? perfil.instagram}</p>
         </div>
+        <Button size="icon" variant="ghost" className="size-8 shrink-0" aria-label="Sair" title="Sair" onClick={async () => { await queryClient.cancelQueries(); queryClient.clear(); await supabase.auth.signOut(); onNavigate?.(); await navigate({ to: "/auth", replace: true }); }}><LogOut className="size-4" /></Button>
       </div>
     </div>
   );

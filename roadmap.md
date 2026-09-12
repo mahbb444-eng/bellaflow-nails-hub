@@ -1,9 +1,8 @@
-# BellaFlow — segunda rodada
+# BellaFlow — contas e despesas
 
-- [x] Atualizar identidade visual e navegação
-- [x] Aprimorar Dashboard
-- [x] Enriquecer Clientes e drawer
-- [x] Refinar Agenda e confirmações
-- [x] Completar Atendimentos e Financeiro
-- [x] Organizar Configurações
-- [x] Verificar desktop e celular
+- [x] Criar acesso por e-mail/senha e Google
+- [x] Isolar e salvar os dados de cada manicure na nuvem
+- [x] Preservar e migrar os dados locais existentes para a primeira conta
+- [x] Criar cadastro, edição e exclusão de despesas
+- [x] Exibir despesas e lucro líquido no Financeiro
+- [x] Validar acesso, isolamento e telas em computador e celular

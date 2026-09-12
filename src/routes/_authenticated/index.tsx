@@ -19,7 +19,7 @@ import { brl } from "@/lib/bella-data";
 import { faturamentoPorMes, porServico } from "@/lib/bella-metrics";
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
     meta: [
       { title: "Dashboard — BellaFlow" },

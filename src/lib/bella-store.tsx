@@ -17,10 +17,14 @@ import {
   type Agendamento,
   type Atendimento,
   type Cliente,
+  type Despesa,
   type Perfil,
   type Servico,
   type Status,
 } from "./bella-data";
+import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
+import { useAuth } from "./auth-context";
 
 interface Estado {
   clientes: Cliente[];
@@ -28,6 +32,7 @@ interface Estado {
   atendimentos: Atendimento[];
   servicos: Servico[];
   perfil: Perfil;
+  despesas: Despesa[];
 }
 
 interface StoreValue extends Estado {
@@ -42,6 +47,9 @@ interface StoreValue extends Estado {
   salvarServico: (s: Omit<Servico, "id"> & { id?: string }) => void;
   removerServico: (id: string) => void;
   salvarPerfil: (p: Perfil) => void;
+  salvarDespesa: (d: Omit<Despesa, "id"> & { id?: string }) => void;
+  removerDespesa: (id: string) => void;
+  carregando: boolean;
 }
 
 const Ctx = createContext<StoreValue | null>(null);
@@ -54,31 +62,80 @@ function estadoInicial(hoje: Date): Estado {
     atendimentos: gerarAtendimentos(hoje),
     servicos: SERVICOS_PADRAO,
     perfil: PERFIL_PADRAO,
+    despesas: [],
   };
 }
 
 const novoId = (p: string) => `${p}${Math.random().toString(36).slice(2, 9)}`;
 
 export function BellaProvider({ children }: { children: ReactNode }) {
+  const { user, loading: authLoading } = useAuth();
   const hojeDate = useMemo(() => new Date(), []);
   const [estado, setEstado] = useState<Estado>(() => estadoInicial(hojeDate));
+  const [carregando, setCarregando] = useState(true);
+  const [prontoParaSalvar, setProntoParaSalvar] = useState(false);
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(KEY);
-      if (raw) setEstado(JSON.parse(raw) as Estado);
-    } catch {
-      /* ignora */
+    if (authLoading) return;
+    if (!user) {
+      setCarregando(false);
+      setProntoParaSalvar(false);
+      return;
     }
-  }, []);
+
+    let active = true;
+    const load = async () => {
+      setCarregando(true);
+      setProntoParaSalvar(false);
+      const { data, error } = await supabase
+        .from("app_states")
+        .select("state")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (!active) return;
+      if (error) {
+        console.error(error);
+        setCarregando(false);
+        return;
+      }
+
+      let next = estadoInicial(hojeDate);
+      if (data?.state && typeof data.state === "object") {
+        next = { ...next, ...(data.state as unknown as Partial<Estado>), despesas: (data.state as unknown as Partial<Estado>).despesas ?? [] };
+      } else {
+        try {
+          const raw = localStorage.getItem(KEY);
+          if (raw) next = { ...next, ...(JSON.parse(raw) as Partial<Estado>), despesas: (JSON.parse(raw) as Partial<Estado>).despesas ?? [] };
+        } catch {
+          // A conta nova começa com os dados demonstrativos.
+        }
+        const { error: saveError } = await supabase.from("app_states").insert({
+          user_id: user.id,
+          state: next as unknown as Json,
+          updated_at: new Date().toISOString(),
+        });
+        if (saveError) console.error(saveError);
+        else localStorage.removeItem(KEY);
+      }
+      setEstado(next);
+      setCarregando(false);
+      setProntoParaSalvar(true);
+    };
+    void load();
+    return () => { active = false; };
+  }, [authLoading, hojeDate, user]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem(KEY, JSON.stringify(estado));
-    } catch {
-      /* ignora */
-    }
-  }, [estado]);
+    if (!user || !prontoParaSalvar) return;
+    const timer = window.setTimeout(() => {
+      void supabase.from("app_states").upsert({
+        user_id: user.id,
+        state: estado as unknown as Json,
+        updated_at: new Date().toISOString(),
+      }).then(({ error }) => { if (error) console.error(error); });
+    }, 250);
+    return () => window.clearTimeout(timer);
+  }, [estado, prontoParaSalvar, user]);
 
   const nomeCliente = useCallback(
     (id: string) => estado.clientes.find((c) => c.id === id)?.nome ?? "Cliente removida",
@@ -88,6 +145,7 @@ export function BellaProvider({ children }: { children: ReactNode }) {
   const value: StoreValue = {
     ...estado,
     hoje: toISO(hojeDate),
+    carregando,
     nomeCliente,
     salvarCliente: (c) =>
       setEstado((e) => ({
@@ -143,7 +201,20 @@ export function BellaProvider({ children }: { children: ReactNode }) {
     removerServico: (id) =>
       setEstado((e) => ({ ...e, servicos: e.servicos.filter((s) => s.id !== id) })),
     salvarPerfil: (p) => setEstado((e) => ({ ...e, perfil: p })),
+    salvarDespesa: (d) =>
+      setEstado((e) => ({
+        ...e,
+        despesas: d.id
+          ? e.despesas.map((x) => (x.id === d.id ? ({ ...x, ...d } as Despesa) : x))
+          : [{ ...d, id: novoId("d") } as Despesa, ...e.despesas],
+      })),
+    removerDespesa: (id) =>
+      setEstado((e) => ({ ...e, despesas: e.despesas.filter((d) => d.id !== id) })),
   };
+
+  if (user && carregando) {
+    return <div className="flex min-h-screen items-center justify-center bg-background"><div className="text-center"><div className="mx-auto size-8 animate-spin rounded-full border-2 border-primary/20 border-t-primary" /><p className="mt-3 text-sm text-muted-foreground">Preparando seu BellaFlow...</p></div></div>;
+  }
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

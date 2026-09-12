@@ -10,7 +10,7 @@ import { useBella } from "@/lib/bella-store";
 import { brl } from "@/lib/bella-data";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-export const Route = createFileRoute("/configuracoes")({
+export const Route = createFileRoute("/_authenticated/configuracoes")({
   head: () => ({
     meta: [
       { title: "Configurações — BellaFlow" },

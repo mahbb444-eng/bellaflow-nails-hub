@@ -29,7 +29,7 @@ import { useBella } from "@/lib/bella-store";
 import { brl, dataBR, type Cliente } from "@/lib/bella-data";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/clientes")({
+export const Route = createFileRoute("/_authenticated/clientes")({
   validateSearch: (search: Record<string, unknown>) => ({
     cliente: typeof search["cliente"] === "string" ? search["cliente"] : undefined,
   }),
