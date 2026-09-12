@@ -19,6 +19,16 @@ import { useBella } from "@/lib/bella-store";
 import { brl, dataBR, toISO, type Agendamento, type Status } from "@/lib/bella-data";
 import { inicioDaSemana } from "@/lib/bella-metrics";
 import { cn } from "@/lib/utils";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export const Route = createFileRoute("/agenda")({
   head: () => ({
@@ -29,6 +39,8 @@ export const Route = createFileRoute("/agenda")({
         content: "Visualize sua semana, crie agendamentos e marque atendimentos como realizados.",
       },
       { property: "og:title", content: "Agenda — BellaFlow" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { property: "og:description", content: "Sua semana de atendimentos, organizada e elegante." },
     ],
   }),
@@ -53,6 +65,7 @@ function AgendaPage() {
   const [modo, setModo] = useState<"semana" | "dia">("semana");
   const [offset, setOffset] = useState(0);
   const [form, setForm] = useState<(Omit<Agendamento, "id"> & { id?: string }) | null>(null);
+  const [excluir, setExcluir] = useState<Agendamento | null>(null);
 
   const base = useMemo(() => {
     const d = new Date(hoje + "T00:00:00");
@@ -92,8 +105,8 @@ function AgendaPage() {
       titulo="Agenda"
       descricao={periodo}
       acoes={
-        <div className="flex items-center gap-2">
-          <div className="flex rounded-xl border border-border p-1">
+          <div className="flex flex-wrap items-center justify-end gap-2">
+          <div className="flex rounded-lg border border-border bg-card p-1">
             {(["semana", "dia"] as const).map((m) => (
               <button
                 key={m}
@@ -102,8 +115,8 @@ function AgendaPage() {
                   setOffset(0);
                 }}
                 className={cn(
-                  "rounded-lg px-3 py-1.5 text-xs capitalize",
-                  modo === m ? "bg-nude font-medium" : "text-muted-foreground",
+                  "rounded-md px-3 py-1.5 text-xs font-semibold capitalize transition-colors",
+                  modo === m ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-accent",
                 )}
               >
                 {m}
@@ -116,8 +129,8 @@ function AgendaPage() {
           <Button variant="outline" size="icon" onClick={() => setOffset((o) => o + 1)}>
             <ChevronRight className="size-4" />
           </Button>
-          <Button onClick={() => novo(dias[0]!, "09:00")} className="rounded-xl">
-            <Plus className="size-4" /> Agendar
+          <Button onClick={() => novo(dias[0]!, "09:00")}>
+            <Plus className="size-4" /> Novo agendamento
           </Button>
         </div>
       }
@@ -134,7 +147,7 @@ function AgendaPage() {
             .sort((a, b) => a.hora.localeCompare(b.hora));
           const d = new Date(dia + "T00:00:00");
           return (
-            <Card key={dia} className={cn(dia === hoje && "ring-1 ring-primary/40")}>
+            <Card key={dia} className={cn("p-4", dia === hoje && "border-primary/40 ring-2 ring-primary/10")}>
               <div className="flex items-baseline justify-between">
                 <h2 className="text-lg font-semibold">
                   {DIAS[d.getDay()]} {d.getDate()}
@@ -154,7 +167,7 @@ function AgendaPage() {
                   ),
                 )}
                 {doDia.map((a) => (
-                  <div key={a.id} className="rounded-2xl bg-nude/50 p-3">
+                    <div key={a.id} className={cn("rounded-lg border-l-4 bg-nude/55 p-3", a.status === "Confirmado" && "border-l-primary", a.status === "Agendado" && "border-l-gold", a.status === "Realizado" && "border-l-chart-4", a.status === "Cancelado" && "border-l-destructive opacity-65")}>
                     <div className="flex items-start justify-between gap-2">
                       <button
                         onClick={() => setForm(a)}
@@ -189,7 +202,7 @@ function AgendaPage() {
                         size="icon"
                         variant="ghost"
                         className="size-7"
-                        onClick={() => removerAgendamento(a.id)}
+                        onClick={() => setExcluir(a)}
                         aria-label="Excluir agendamento"
                       >
                         <Trash2 className="size-3.5 text-destructive" />
@@ -328,6 +341,12 @@ function AgendaPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <AlertDialog open={!!excluir} onOpenChange={(open) => !open && setExcluir(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader><AlertDialogTitle>Excluir este agendamento?</AlertDialogTitle><AlertDialogDescription>O horário de {excluir?.hora} será removido da agenda. Esta ação não pode ser desfeita.</AlertDialogDescription></AlertDialogHeader>
+          <AlertDialogFooter><AlertDialogCancel>Cancelar</AlertDialogCancel><AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={() => { if (!excluir) return; removerAgendamento(excluir.id); setExcluir(null); toast.success("Agendamento removido"); }}>Excluir agendamento</AlertDialogAction></AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AppLayout>
   );
 }

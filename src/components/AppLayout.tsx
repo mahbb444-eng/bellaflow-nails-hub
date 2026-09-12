@@ -31,14 +31,14 @@ function Nav({ onNavigate }: { onNavigate?: () => void }) {
     .join("");
 
   return (
-    <div className="flex h-full flex-col bg-sidebar px-5 py-7">
-      <div className="flex items-center gap-2 px-2">
-        <span className="flex size-9 items-center justify-center rounded-2xl bg-rose">
-          <Sparkles className="size-4 text-primary" />
+    <div className="flex h-full flex-col bg-sidebar px-4 py-6">
+      <div className="flex items-center gap-3 px-2">
+        <span className="flex size-10 items-center justify-center rounded-xl bg-primary shadow-sm">
+          <Sparkles className="size-4 text-primary-foreground" />
         </span>
         <div className="leading-tight">
           <p className="font-display text-xl font-semibold">BellaFlow</p>
-          <p className="text-[11px] tracking-widest text-muted-foreground uppercase">Nail Studio</p>
+          <p className="text-[10px] font-semibold tracking-[0.18em] text-primary uppercase">Nail Studio</p>
         </div>
       </div>
 
@@ -49,7 +49,7 @@ function Nav({ onNavigate }: { onNavigate?: () => void }) {
             to={to}
             onClick={onNavigate}
             activeOptions={{ exact: to === "/" }}
-            className="group flex items-center gap-3 rounded-2xl px-4 py-3 text-sm text-muted-foreground transition-colors hover:bg-nude/70 data-[status=active]:bg-nude data-[status=active]:font-medium data-[status=active]:text-foreground"
+            className="group flex items-center gap-3 rounded-lg border border-transparent px-3 py-2.5 text-sm font-medium text-muted-foreground transition-all hover:bg-accent/60 hover:text-foreground data-[status=active]:border-primary/10 data-[status=active]:bg-accent data-[status=active]:text-primary"
           >
             <Icon className="size-[18px] group-data-[status=active]:text-primary" />
             {label}
@@ -57,7 +57,7 @@ function Nav({ onNavigate }: { onNavigate?: () => void }) {
         ))}
       </nav>
 
-      <div className="mt-6 flex items-center gap-3 rounded-2xl bg-nude/60 p-3">
+      <div className="mt-6 flex items-center gap-3 rounded-xl border border-border bg-card p-3 shadow-[var(--shadow-card)]">
         <span className="flex size-10 items-center justify-center rounded-full bg-primary text-sm font-medium text-primary-foreground">
           {iniciais}
         </span>
@@ -103,7 +103,7 @@ export function AppLayout({
       )}
 
       <main className={cn("lg:pl-64")}>
-        <header className="flex flex-wrap items-center justify-between gap-4 px-5 pt-8 pb-2 sm:px-9">
+        <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border/70 px-5 py-6 sm:px-9">
           <div className="flex items-center gap-3">
             <button
               className="rounded-xl border border-border p-2 lg:hidden"
@@ -113,13 +113,13 @@ export function AppLayout({
               <Menu className="size-4" />
             </button>
             <div>
-              <h1 className="text-3xl font-semibold">{titulo}</h1>
+              <h1 className="text-2xl font-semibold sm:text-3xl">{titulo}</h1>
               {descricao && <p className="text-sm text-muted-foreground">{descricao}</p>}
             </div>
           </div>
           {acoes}
         </header>
-        <div className="px-5 pt-4 pb-12 sm:px-9">{children}</div>
+        <div className="px-5 pt-6 pb-12 sm:px-9">{children}</div>
       </main>
     </div>
   );
@@ -135,7 +135,7 @@ export function Card({
   return (
     <div
       className={cn(
-        "rounded-2xl border border-border bg-card p-5 shadow-[var(--shadow-card)]",
+        "rounded-xl border border-border bg-card p-5 shadow-[var(--shadow-card)]",
         className,
       )}
     >
@@ -148,16 +148,26 @@ export function Metric({
   label,
   value,
   hint,
+  trend,
+  icon,
 }: {
   label: string;
   value: string;
   hint?: string;
+  trend?: string;
+  icon?: ReactNode;
 }) {
   return (
     <Card>
-      <p className="text-xs tracking-wider text-muted-foreground uppercase">{label}</p>
-      <p className="mt-2 font-display text-3xl font-semibold">{value}</p>
-      {hint && <p className="mt-1 text-xs text-muted-foreground">{hint}</p>}
+      <div className="flex items-start justify-between gap-3">
+        <p className="text-xs font-semibold text-muted-foreground uppercase">{label}</p>
+        {icon && <span className="flex size-8 items-center justify-center rounded-lg bg-accent text-primary">{icon}</span>}
+      </div>
+      <p className="mt-3 font-display text-3xl font-semibold">{value}</p>
+      <div className="mt-1 flex items-center gap-2 text-xs">
+        {trend && <span className="font-semibold text-primary">{trend}</span>}
+        {hint && <span className="text-muted-foreground">{hint}</span>}
+      </div>
     </Card>
   );
 }

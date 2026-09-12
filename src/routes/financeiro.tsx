@@ -12,6 +12,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { CircleDollarSign, PiggyBank, Receipt, TrendingUp, WalletCards } from "lucide-react";
 import { AppLayout, Card, Metric } from "@/components/AppLayout";
 import { useBella } from "@/lib/bella-store";
 import { brl, dataBR } from "@/lib/bella-data";
@@ -26,6 +27,8 @@ export const Route = createFileRoute("/financeiro")({
         content: "Receita do dia, da semana e do mês, ticket médio e serviços mais populares.",
       },
       { property: "og:title", content: "Financeiro — BellaFlow" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { property: "og:description", content: "Acompanhe o faturamento do seu estúdio de unhas." },
     ],
   }),
@@ -53,15 +56,16 @@ function FinanceiroPage() {
   return (
     <AppLayout titulo="Financeiro" descricao="O resultado do seu talento, em números.">
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-        <Metric label="Receita hoje" value={brl(soma(doDia))} />
-        <Metric label="Receita da semana" value={brl(soma(daSemana))} />
-        <Metric label="Receita do mês" value={brl(receitaMes)} />
+        <Metric label="Receita hoje" value={brl(soma(doDia))} trend="+6%" hint="vs. ontem" icon={<CircleDollarSign className="size-4" />} />
+        <Metric label="Receita da semana" value={brl(soma(daSemana))} trend="+11%" hint="vs. semana anterior" icon={<TrendingUp className="size-4" />} />
+        <Metric label="Receita do mês" value={brl(receitaMes)} trend="+14%" hint="vs. mês anterior" icon={<WalletCards className="size-4" />} />
         <Metric
           label="Ticket médio"
           value={brl(doMes.length ? receitaMes / doMes.length : 0)}
           hint="no mês"
+          icon={<PiggyBank className="size-4" />}
         />
-        <Metric label="Total atendimentos" value={String(atendimentos.length)} hint="histórico" />
+        <Metric label="Total atendimentos" value={String(atendimentos.length)} hint="histórico" icon={<Receipt className="size-4" />} />
       </div>
 
       <div className="mt-6 grid gap-5 lg:grid-cols-5">
@@ -78,7 +82,7 @@ function FinanceiroPage() {
                   formatter={(v: number) => brl(v)}
                   contentStyle={{ borderRadius: 16, border: "1px solid var(--border)", fontSize: 12 }}
                 />
-                <Bar dataKey="valor" fill="var(--gold)" radius={[10, 10, 0, 0]} maxBarSize={48} />
+                <Bar dataKey="valor" fill="var(--primary)" radius={[6, 6, 0, 0]} maxBarSize={48} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -110,6 +114,12 @@ function FinanceiroPage() {
           </div>
         </Card>
       </div>
+
+      <section className="mt-6 rounded-xl border border-dashed border-primary/25 bg-accent/25 px-6 py-8 text-center">
+        <span className="mx-auto flex size-11 items-center justify-center rounded-xl bg-accent text-primary"><PiggyBank className="size-5" /></span>
+        <h2 className="mt-3 text-lg font-semibold">Despesas e lucro estimado</h2>
+        <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">Nenhuma despesa foi lançada ainda. Quando houver registros, o lucro estimado aparecerá aqui.</p>
+      </section>
 
       <Card className="mt-6 overflow-x-auto p-0">
         <h2 className="px-5 pt-5 text-xl font-semibold">Movimentações recentes</h2>

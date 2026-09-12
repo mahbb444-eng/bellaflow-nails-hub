@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { Bell, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout, Card } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useBella } from "@/lib/bella-store";
 import { brl } from "@/lib/bella-data";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const Route = createFileRoute("/configuracoes")({
   head: () => ({
@@ -18,6 +19,8 @@ export const Route = createFileRoute("/configuracoes")({
         content: "Edite o perfil da profissional e gerencie a tabela de serviços do estúdio.",
       },
       { property: "og:title", content: "Configurações — BellaFlow" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { property: "og:description", content: "Perfil e tabela de serviços do seu estúdio." },
     ],
   }),
@@ -31,8 +34,11 @@ function ConfiguracoesPage() {
 
   return (
     <AppLayout titulo="Configurações" descricao="Seu perfil e sua tabela de serviços.">
-      <div className="grid gap-5 lg:grid-cols-2">
-        <Card>
+      <Tabs defaultValue="perfil" className="space-y-5">
+        <TabsList className="h-auto w-full justify-start gap-1 overflow-x-auto rounded-xl border border-border bg-card p-1.5 sm:w-auto">
+          <TabsTrigger value="perfil">Perfil</TabsTrigger><TabsTrigger value="servicos">Serviços</TabsTrigger><TabsTrigger value="preferencias">Preferências</TabsTrigger>
+        </TabsList>
+        <TabsContent value="perfil"><Card className="max-w-2xl">
           <h2 className="text-xl font-semibold">Perfil da profissional</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <div className="sm:col-span-2">
@@ -71,9 +77,9 @@ function ConfiguracoesPage() {
           >
             Salvar perfil
           </Button>
-        </Card>
+        </Card></TabsContent>
 
-        <Card>
+        <TabsContent value="servicos"><Card>
           <h2 className="text-xl font-semibold">Serviços</h2>
           <div className="mt-4 space-y-2">
             {servicos.map((s) => (
@@ -157,8 +163,9 @@ function ConfiguracoesPage() {
           <p className="mt-4 text-xs text-muted-foreground">
             Tabela atual: {servicos.map((s) => `${s.nome} ${brl(s.preco)}`).join(" · ")}
           </p>
-        </Card>
-      </div>
+        </Card></TabsContent>
+        <TabsContent value="preferencias"><Card className="max-w-2xl"><div className="flex items-center gap-3"><span className="flex size-10 items-center justify-center rounded-xl bg-accent text-primary"><Bell className="size-5" /></span><div><h2 className="text-xl font-semibold">Preferências básicas</h2><p className="text-sm text-muted-foreground">Ajustes para a rotina do seu estúdio.</p></div></div><div className="mt-6 divide-y divide-border"><label className="flex items-center justify-between gap-4 py-4"><div><p className="text-sm font-semibold">Lembretes de agendamento</p><p className="text-xs text-muted-foreground">Destacar compromissos do dia na agenda.</p></div><input type="checkbox" defaultChecked className="size-4 accent-primary" /></label><label className="flex items-center justify-between gap-4 py-4"><div><p className="text-sm font-semibold">Resumo financeiro</p><p className="text-xs text-muted-foreground">Exibir comparações com o período anterior.</p></div><input type="checkbox" defaultChecked className="size-4 accent-primary" /></label><label className="flex items-center justify-between gap-4 py-4"><div><p className="text-sm font-semibold">Semana começa no domingo</p><p className="text-xs text-muted-foreground">Usado na visualização semanal da agenda.</p></div><input type="checkbox" defaultChecked className="size-4 accent-primary" /></label></div></Card></TabsContent>
+      </Tabs>
     </AppLayout>
   );
 }
