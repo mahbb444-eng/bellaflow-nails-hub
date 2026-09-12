@@ -114,6 +114,7 @@ export function BellaProvider({ children }: { children: ReactNode }) {
           updated_at: new Date().toISOString(),
         });
         if (saveError) console.error(saveError);
+        else localStorage.removeItem(KEY);
       }
       setEstado(next);
       setCarregando(false);
@@ -209,6 +210,10 @@ export function BellaProvider({ children }: { children: ReactNode }) {
     removerDespesa: (id) =>
       setEstado((e) => ({ ...e, despesas: e.despesas.filter((d) => d.id !== id) })),
   };
+
+  if (user && carregando) {
+    return <div className="flex min-h-screen items-center justify-center bg-background"><div className="text-center"><div className="mx-auto size-8 animate-spin rounded-full border-2 border-primary/20 border-t-primary" /><p className="mt-3 text-sm text-muted-foreground">Preparando seu BellaFlow...</p></div></div>;
+  }
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

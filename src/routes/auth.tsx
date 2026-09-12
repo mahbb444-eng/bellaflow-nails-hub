@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Eye, EyeOff, LoaderCircle, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,12 @@ function AuthPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
   const [confirmationSent, setConfirmationSent] = useState(false);
+
+  useEffect(() => {
+    void supabase.auth.getUser().then(({ data }) => {
+      if (data.user) void navigate({ to: "/", replace: true });
+    });
+  }, [navigate]);
 
   const submit = async () => {
     if (!email.trim() || (mode !== "forgot" && password.length < 6)) {
