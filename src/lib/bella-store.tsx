@@ -23,6 +23,7 @@ import {
   type Status,
 } from "./bella-data";
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 import { useAuth } from "./auth-context";
 
 interface Estado {
@@ -110,7 +111,7 @@ export function BellaProvider({ children }: { children: ReactNode }) {
         }
         const { error: saveError } = await supabase.from("app_states").insert({
           user_id: user.id,
-          state: next as unknown as Record<string, unknown>,
+          state: next as unknown as Json,
           updated_at: new Date().toISOString(),
         });
         if (saveError) console.error(saveError);
@@ -129,7 +130,7 @@ export function BellaProvider({ children }: { children: ReactNode }) {
     const timer = window.setTimeout(() => {
       void supabase.from("app_states").upsert({
         user_id: user.id,
-        state: estado as unknown as Record<string, unknown>,
+        state: estado as unknown as Json,
         updated_at: new Date().toISOString(),
       }).then(({ error }) => { if (error) console.error(error); });
     }, 250);
