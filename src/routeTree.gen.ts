@@ -10,11 +10,23 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AgendaRouteImport } from './routes/agenda'
+import { Route as AtendimentosRouteImport } from './routes/atendimentos'
 import { Route as ClientesRouteImport } from './routes/clientes'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AgendaRoute = AgendaRouteImport.update({
+  id: '/agenda',
+  path: '/agenda',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AtendimentosRoute = AtendimentosRouteImport.update({
+  id: '/atendimentos',
+  path: '/atendimentos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ClientesRoute = ClientesRouteImport.update({
@@ -25,27 +37,35 @@ const ClientesRoute = ClientesRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/agenda': typeof AgendaRoute
+  '/atendimentos': typeof AtendimentosRoute
   '/clientes': typeof ClientesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/agenda': typeof AgendaRoute
+  '/atendimentos': typeof AtendimentosRoute
   '/clientes': typeof ClientesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/agenda': typeof AgendaRoute
+  '/atendimentos': typeof AtendimentosRoute
   '/clientes': typeof ClientesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/clientes'
+  fullPaths: '/' | '/agenda' | '/atendimentos' | '/clientes'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/clientes'
-  id: '__root__' | '/' | '/clientes'
+  to: '/' | '/agenda' | '/atendimentos' | '/clientes'
+  id: '__root__' | '/' | '/agenda' | '/atendimentos' | '/clientes'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AgendaRoute: typeof AgendaRoute
+  AtendimentosRoute: typeof AtendimentosRoute
   ClientesRoute: typeof ClientesRoute
 }
 
@@ -56,6 +76,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agenda': {
+      id: '/agenda'
+      path: '/agenda'
+      fullPath: '/agenda'
+      preLoaderRoute: typeof AgendaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/atendimentos': {
+      id: '/atendimentos'
+      path: '/atendimentos'
+      fullPath: '/atendimentos'
+      preLoaderRoute: typeof AtendimentosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/clientes': {
@@ -70,6 +104,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AgendaRoute: AgendaRoute,
+  AtendimentosRoute: AtendimentosRoute,
   ClientesRoute: ClientesRoute,
 }
 export const routeTree = rootRouteImport
