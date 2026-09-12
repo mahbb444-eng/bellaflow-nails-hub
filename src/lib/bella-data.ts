@@ -47,6 +47,17 @@ export interface Perfil {
   email: string;
 }
 
+export type CategoriaDespesa = "Materiais" | "Aluguel" | "Marketing" | "Taxas" | "Outros";
+
+export interface Despesa {
+  id: string;
+  descricao: string;
+  categoria: CategoriaDespesa;
+  data: string;
+  valor: number;
+  observacoes: string;
+}
+
 export const SERVICOS_PADRAO: Servico[] = [
   { id: "s1", nome: "Alongamento", preco: 180, duracao: 120 },
   { id: "s2", nome: "Manutenção", preco: 120, duracao: 90 },

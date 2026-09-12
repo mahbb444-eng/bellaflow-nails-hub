@@ -9,159 +9,161 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AgendaRouteImport } from './routes/agenda'
-import { Route as AtendimentosRouteImport } from './routes/atendimentos'
-import { Route as ClientesRouteImport } from './routes/clientes'
-import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
-import { Route as FinanceiroRouteImport } from './routes/financeiro'
+import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedAgendaRouteImport } from './routes/_authenticated/agenda'
+import { Route as AuthenticatedAtendimentosRouteImport } from './routes/_authenticated/atendimentos'
+import { Route as AuthenticatedClientesRouteImport } from './routes/_authenticated/clientes'
+import { Route as AuthenticatedConfiguracoesRouteImport } from './routes/_authenticated/configuracoes'
+import { Route as AuthenticatedFinanceiroRouteImport } from './routes/_authenticated/financeiro'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
+const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
+  id: '/_authenticated/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AgendaRoute = AgendaRouteImport.update({
-  id: '/agenda',
+const AuthenticatedAgendaRoute = AuthenticatedAgendaRouteImport.update({
+  id: '/_authenticated/agenda',
   path: '/agenda',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AtendimentosRoute = AtendimentosRouteImport.update({
-  id: '/atendimentos',
-  path: '/atendimentos',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ClientesRoute = ClientesRouteImport.update({
-  id: '/clientes',
+const AuthenticatedAtendimentosRoute =
+  AuthenticatedAtendimentosRouteImport.update({
+    id: '/_authenticated/atendimentos',
+    path: '/atendimentos',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedClientesRoute = AuthenticatedClientesRouteImport.update({
+  id: '/_authenticated/clientes',
   path: '/clientes',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ConfiguracoesRoute = ConfiguracoesRouteImport.update({
-  id: '/configuracoes',
-  path: '/configuracoes',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FinanceiroRoute = FinanceiroRouteImport.update({
-  id: '/financeiro',
+const AuthenticatedConfiguracoesRoute =
+  AuthenticatedConfiguracoesRouteImport.update({
+    id: '/_authenticated/configuracoes',
+    path: '/configuracoes',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedFinanceiroRoute = AuthenticatedFinanceiroRouteImport.update({
+  id: '/_authenticated/financeiro',
   path: '/financeiro',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/agenda': typeof AgendaRoute
-  '/atendimentos': typeof AtendimentosRoute
-  '/clientes': typeof ClientesRoute
-  '/configuracoes': typeof ConfiguracoesRoute
-  '/financeiro': typeof FinanceiroRoute
+  '/agenda': typeof AuthenticatedAgendaRoute
+  '/atendimentos': typeof AuthenticatedAtendimentosRoute
+  '/clientes': typeof AuthenticatedClientesRoute
+  '/configuracoes': typeof AuthenticatedConfiguracoesRoute
+  '/financeiro': typeof AuthenticatedFinanceiroRoute
+  '/': typeof AuthenticatedIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/agenda': typeof AgendaRoute
-  '/atendimentos': typeof AtendimentosRoute
-  '/clientes': typeof ClientesRoute
-  '/configuracoes': typeof ConfiguracoesRoute
-  '/financeiro': typeof FinanceiroRoute
+  '/agenda': typeof AuthenticatedAgendaRoute
+  '/atendimentos': typeof AuthenticatedAtendimentosRoute
+  '/clientes': typeof AuthenticatedClientesRoute
+  '/configuracoes': typeof AuthenticatedConfiguracoesRoute
+  '/financeiro': typeof AuthenticatedFinanceiroRoute
+  '/': typeof AuthenticatedIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/agenda': typeof AgendaRoute
-  '/atendimentos': typeof AtendimentosRoute
-  '/clientes': typeof ClientesRoute
-  '/configuracoes': typeof ConfiguracoesRoute
-  '/financeiro': typeof FinanceiroRoute
+  '/_authenticated/agenda': typeof AuthenticatedAgendaRoute
+  '/_authenticated/atendimentos': typeof AuthenticatedAtendimentosRoute
+  '/_authenticated/clientes': typeof AuthenticatedClientesRoute
+  '/_authenticated/configuracoes': typeof AuthenticatedConfiguracoesRoute
+  '/_authenticated/financeiro': typeof AuthenticatedFinanceiroRoute
+  '/_authenticated/': typeof AuthenticatedIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
     | '/agenda'
     | '/atendimentos'
     | '/clientes'
     | '/configuracoes'
     | '/financeiro'
+    | '/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
     | '/agenda'
     | '/atendimentos'
     | '/clientes'
     | '/configuracoes'
     | '/financeiro'
+    | '/'
   id:
     | '__root__'
-    | '/'
-    | '/agenda'
-    | '/atendimentos'
-    | '/clientes'
-    | '/configuracoes'
-    | '/financeiro'
+    | '/_authenticated/agenda'
+    | '/_authenticated/atendimentos'
+    | '/_authenticated/clientes'
+    | '/_authenticated/configuracoes'
+    | '/_authenticated/financeiro'
+    | '/_authenticated/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  AgendaRoute: typeof AgendaRoute
-  AtendimentosRoute: typeof AtendimentosRoute
-  ClientesRoute: typeof ClientesRoute
-  ConfiguracoesRoute: typeof ConfiguracoesRoute
-  FinanceiroRoute: typeof FinanceiroRoute
+  AuthenticatedAgendaRoute: typeof AuthenticatedAgendaRoute
+  AuthenticatedAtendimentosRoute: typeof AuthenticatedAtendimentosRoute
+  AuthenticatedClientesRoute: typeof AuthenticatedClientesRoute
+  AuthenticatedConfiguracoesRoute: typeof AuthenticatedConfiguracoesRoute
+  AuthenticatedFinanceiroRoute: typeof AuthenticatedFinanceiroRoute
+  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/_authenticated/': {
+      id: '/_authenticated/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+      preLoaderRoute: typeof AuthenticatedIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/agenda': {
-      id: '/agenda'
+    '/_authenticated/agenda': {
+      id: '/_authenticated/agenda'
       path: '/agenda'
       fullPath: '/agenda'
-      preLoaderRoute: typeof AgendaRouteImport
+      preLoaderRoute: typeof AuthenticatedAgendaRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/atendimentos': {
-      id: '/atendimentos'
+    '/_authenticated/atendimentos': {
+      id: '/_authenticated/atendimentos'
       path: '/atendimentos'
       fullPath: '/atendimentos'
-      preLoaderRoute: typeof AtendimentosRouteImport
+      preLoaderRoute: typeof AuthenticatedAtendimentosRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/clientes': {
-      id: '/clientes'
+    '/_authenticated/clientes': {
+      id: '/_authenticated/clientes'
       path: '/clientes'
       fullPath: '/clientes'
-      preLoaderRoute: typeof ClientesRouteImport
+      preLoaderRoute: typeof AuthenticatedClientesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/configuracoes': {
-      id: '/configuracoes'
+    '/_authenticated/configuracoes': {
+      id: '/_authenticated/configuracoes'
       path: '/configuracoes'
       fullPath: '/configuracoes'
-      preLoaderRoute: typeof ConfiguracoesRouteImport
+      preLoaderRoute: typeof AuthenticatedConfiguracoesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/financeiro': {
-      id: '/financeiro'
+    '/_authenticated/financeiro': {
+      id: '/_authenticated/financeiro'
       path: '/financeiro'
       fullPath: '/financeiro'
-      preLoaderRoute: typeof FinanceiroRouteImport
+      preLoaderRoute: typeof AuthenticatedFinanceiroRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  AgendaRoute: AgendaRoute,
-  AtendimentosRoute: AtendimentosRoute,
-  ClientesRoute: ClientesRoute,
-  ConfiguracoesRoute: ConfiguracoesRoute,
-  FinanceiroRoute: FinanceiroRoute,
+  AuthenticatedAgendaRoute: AuthenticatedAgendaRoute,
+  AuthenticatedAtendimentosRoute: AuthenticatedAtendimentosRoute,
+  AuthenticatedClientesRoute: AuthenticatedClientesRoute,
+  AuthenticatedConfiguracoesRoute: AuthenticatedConfiguracoesRoute,
+  AuthenticatedFinanceiroRoute: AuthenticatedFinanceiroRoute,
+  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
