@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { Pencil, Plus, Search, Trash2 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { CalendarClock, CircleDollarSign, Pencil, Plus, Search, Sparkles, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout, Card } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
@@ -15,10 +15,24 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useBella } from "@/lib/bella-store";
 import { brl, dataBR, type Cliente } from "@/lib/bella-data";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/clientes")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    cliente: typeof search.cliente === "string" ? search.cliente : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Clientes — BellaFlow" },
@@ -47,6 +61,13 @@ function ClientesPage() {
   const [busca, setBusca] = useState("");
   const [form, setForm] = useState<(Omit<Cliente, "id"> & { id?: string }) | null>(null);
   const [detalhe, setDetalhe] = useState<Cliente | null>(null);
+  const [excluir, setExcluir] = useState<Cliente | null>(null);
+  const { cliente: clienteBusca } = Route.useSearch();
+
+  useEffect(() => {
+    if (!clienteBusca) return;
+    setDetalhe(clientes.find((cliente) => cliente.id === clienteBusca) ?? null);
+  }, [clienteBusca, clientes]);
 
   const lista = useMemo(() => {
     const q = busca.trim().toLowerCase();
@@ -65,6 +86,17 @@ function ClientesPage() {
         .sort((a, b) => b.data.localeCompare(a.data))
     : [];
   const totalGasto = historico.reduce((s, a) => s + a.valor, 0);
+  const ultimo = historico[0];
+  const servicoMaisUsado = historico.reduce<Record<string, number>>((acc, item) => {
+    acc[item.servico] = (acc[item.servico] ?? 0) + 1;
+    return acc;
+  }, {});
+  const favorito = Object.entries(servicoMaisUsado).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "—";
+
+  const resumoCliente = (id: string) => {
+    const itens = atendimentos.filter((a) => a.clienteId === id).sort((a, b) => b.data.localeCompare(a.data));
+    return { ultimo: itens[0], total: itens.reduce((s, a) => s + a.valor, 0) };
+  };
 
   return (
     <AppLayout
@@ -93,7 +125,7 @@ function ClientesPage() {
                 <th className="px-5 py-3 font-medium">Cliente</th>
                 <th className="px-5 py-3 font-medium">Telefone</th>
                 <th className="hidden px-5 py-3 font-medium md:table-cell">Instagram</th>
-                <th className="hidden px-5 py-3 font-medium lg:table-cell">Preferência</th>
+                <th className="hidden px-5 py-3 font-medium lg:table-cell">Última visita · gasto</th>
                 <th className="px-5 py-3 text-right font-medium">Ações</th>
               </tr>
             </thead>
@@ -102,16 +134,14 @@ function ClientesPage() {
                 <tr
                   key={c.id}
                   onClick={() => setDetalhe(c)}
-                  className="cursor-pointer border-t border-border transition-colors hover:bg-nude/40"
+                  className="cursor-pointer border-t border-border transition-colors hover:bg-accent/40"
                 >
-                  <td className="px-5 py-4 font-medium">{c.nome}</td>
+                  <td className="px-5 py-4"><div className="flex items-center gap-3"><span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent text-xs font-bold text-primary">{c.nome.split(" ").slice(0, 2).map((n) => n[0]).join("")}</span><div><p className="font-semibold">{c.nome}</p><span className={cn("text-[11px] font-semibold", resumoCliente(c.id).ultimo ? "text-primary" : "text-muted-foreground")}>{resumoCliente(c.id).ultimo ? "Ativa" : "Nova"}</span></div></div></td>
                   <td className="px-5 py-4 text-muted-foreground">{c.telefone}</td>
                   <td className="hidden px-5 py-4 text-muted-foreground md:table-cell">
                     {c.instagram}
                   </td>
-                  <td className="hidden px-5 py-4 text-muted-foreground lg:table-cell">
-                    {c.preferencia}
-                  </td>
+                  <td className="hidden px-5 py-4 text-muted-foreground lg:table-cell"><p>{resumoCliente(c.id).ultimo ? dataBR(resumoCliente(c.id).ultimo?.data ?? "") : "—"}</p><p className="text-xs text-primary">{brl(resumoCliente(c.id).total)}</p></td>
                   <td className="px-5 py-4 text-right whitespace-nowrap">
                     <Button
                       size="icon"
@@ -129,8 +159,7 @@ function ClientesPage() {
                       variant="ghost"
                       onClick={(e) => {
                         e.stopPropagation();
-                        removerCliente(c.id);
-                        toast.success("Cliente removida");
+                        setExcluir(c);
                       }}
                       aria-label="Excluir"
                     >
@@ -242,14 +271,16 @@ function ClientesPage() {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-2xl border border-border p-4">
+                <div className="rounded-xl border border-border p-4">
                   <p className="text-xs text-muted-foreground uppercase">Total gasto</p>
                   <p className="font-display text-2xl font-semibold">{brl(totalGasto)}</p>
                 </div>
-                <div className="rounded-2xl border border-border p-4">
+                <div className="rounded-xl border border-border p-4">
                   <p className="text-xs text-muted-foreground uppercase">Atendimentos</p>
                   <p className="font-display text-2xl font-semibold">{historico.length}</p>
                 </div>
+                <div className="rounded-xl border border-border p-4"><CalendarClock className="mb-2 size-4 text-primary" /><p className="text-xs text-muted-foreground uppercase">Última visita</p><p className="mt-1 text-sm font-semibold">{ultimo ? dataBR(ultimo.data) : "—"}</p></div>
+                <div className="rounded-xl border border-border p-4"><Sparkles className="mb-2 size-4 text-primary" /><p className="text-xs text-muted-foreground uppercase">Mais usado</p><p className="mt-1 truncate text-sm font-semibold">{favorito}</p></div>
               </div>
 
               <div>
@@ -278,6 +309,13 @@ function ClientesPage() {
           )}
         </SheetContent>
       </Sheet>
+
+      <AlertDialog open={!!excluir} onOpenChange={(open) => !open && setExcluir(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader><AlertDialogTitle>Excluir esta cliente?</AlertDialogTitle><AlertDialogDescription>O cadastro de {excluir?.nome} será removido. Esta ação não pode ser desfeita.</AlertDialogDescription></AlertDialogHeader>
+          <AlertDialogFooter><AlertDialogCancel>Cancelar</AlertDialogCancel><AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={() => { if (!excluir) return; removerCliente(excluir.id); setExcluir(null); toast.success("Cliente removida"); }}>Excluir cliente</AlertDialogAction></AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AppLayout>
   );
 }
