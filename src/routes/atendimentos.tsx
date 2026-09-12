@@ -16,6 +16,8 @@ export const Route = createFileRoute("/atendimentos")({
         content: "Histórico completo de atendimentos com filtros por período, cliente e serviço.",
       },
       { property: "og:title", content: "Atendimentos — BellaFlow" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { property: "og:description", content: "Todo o histórico do seu estúdio em um só lugar." },
     ],
   }),

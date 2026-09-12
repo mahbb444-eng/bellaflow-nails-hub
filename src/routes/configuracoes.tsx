@@ -19,6 +19,8 @@ export const Route = createFileRoute("/configuracoes")({
         content: "Edite o perfil da profissional e gerencie a tabela de serviços do estúdio.",
       },
       { property: "og:title", content: "Configurações — BellaFlow" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { property: "og:description", content: "Perfil e tabela de serviços do seu estúdio." },
     ],
   }),

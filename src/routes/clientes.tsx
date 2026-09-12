@@ -41,6 +41,8 @@ export const Route = createFileRoute("/clientes")({
         content: "Cadastro completo das suas clientes com histórico de atendimentos e total gasto.",
       },
       { property: "og:title", content: "Clientes — BellaFlow" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { property: "og:description", content: "Gerencie suas clientes com carinho e organização." },
     ],
   }),

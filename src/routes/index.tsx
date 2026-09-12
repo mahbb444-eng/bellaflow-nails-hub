@@ -29,6 +29,8 @@ export const Route = createFileRoute("/")({
           "Acompanhe clientes, agendamentos do dia, receita do mês e ticket médio do seu estúdio de unhas.",
       },
       { property: "og:title", content: "Dashboard — BellaFlow" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       {
         property: "og:description",
         content: "Indicadores do seu estúdio de unhas em tempo real.",

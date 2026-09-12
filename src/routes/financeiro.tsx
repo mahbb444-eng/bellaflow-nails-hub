@@ -27,6 +27,8 @@ export const Route = createFileRoute("/financeiro")({
         content: "Receita do dia, da semana e do mês, ticket médio e serviços mais populares.",
       },
       { property: "og:title", content: "Financeiro — BellaFlow" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { property: "og:description", content: "Acompanhe o faturamento do seu estúdio de unhas." },
     ],
   }),
