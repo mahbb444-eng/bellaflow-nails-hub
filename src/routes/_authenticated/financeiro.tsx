@@ -18,7 +18,7 @@ import { useBella } from "@/lib/bella-store";
 import { brl, dataBR } from "@/lib/bella-data";
 import { faturamentoPorMes, inicioDaSemana, porServico } from "@/lib/bella-metrics";
 
-export const Route = createFileRoute("/financeiro")({
+export const Route = createFileRoute("/_authenticated/financeiro")({
   head: () => ({
     meta: [
       { title: "Financeiro — BellaFlow" },

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useBella } from "@/lib/bella-store";
 import { brl, dataBR } from "@/lib/bella-data";
 
-export const Route = createFileRoute("/atendimentos")({
+export const Route = createFileRoute("/_authenticated/atendimentos")({
   head: () => ({
     meta: [
       { title: "Atendimentos — BellaFlow" },

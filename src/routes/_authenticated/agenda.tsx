@@ -30,7 +30,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-export const Route = createFileRoute("/agenda")({
+export const Route = createFileRoute("/_authenticated/agenda")({
   head: () => ({
     meta: [
       { title: "Agenda — BellaFlow" },
