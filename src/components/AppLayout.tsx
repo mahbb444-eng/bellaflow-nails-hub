@@ -39,14 +39,14 @@ function Nav({ onNavigate }: { onNavigate?: () => void }) {
     .join("");
 
   return (
-    <div className="flex h-full flex-col bg-sidebar px-4 py-6">
-      <div className="flex items-center gap-3 px-2">
-        <span className="flex size-10 items-center justify-center rounded-xl bg-primary shadow-sm">
+    <div className="flex h-full flex-col bg-sidebar px-4 py-6 text-sidebar-foreground">
+      <div className="flex items-center gap-3 px-2 py-1">
+        <span className="flex size-10 items-center justify-center rounded-xl bg-sidebar-primary shadow-[var(--shadow-lift)]">
           <Sparkles className="size-4 text-primary-foreground" />
         </span>
         <div className="leading-tight">
           <p className="font-display text-xl font-semibold">BellaFlow</p>
-          <p className="text-[10px] font-semibold tracking-[0.18em] text-primary uppercase">Nail Studio</p>
+          <p className="text-[10px] font-semibold tracking-[0.16em] text-sidebar-foreground/55 uppercase">Nail Studio</p>
         </div>
       </div>
 
@@ -57,23 +57,23 @@ function Nav({ onNavigate }: { onNavigate?: () => void }) {
             to={to}
             onClick={onNavigate}
             activeOptions={{ exact: to === "/" }}
-            className="group flex items-center gap-3 rounded-lg border border-transparent px-3 py-2.5 text-sm font-medium text-muted-foreground transition-all hover:bg-accent/60 hover:text-foreground data-[status=active]:border-primary/10 data-[status=active]:bg-accent data-[status=active]:text-primary"
+            className="group flex items-center gap-3 rounded-lg border border-transparent px-3 py-2.5 text-sm font-medium text-sidebar-foreground/62 transition-all duration-200 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[status=active]:border-sidebar-border data-[status=active]:bg-sidebar-primary data-[status=active]:text-sidebar-primary-foreground data-[status=active]:shadow-[var(--shadow-lift)]"
           >
-            <Icon className="size-[18px] group-data-[status=active]:text-primary" />
+            <Icon className="size-[18px]" />
             {label}
           </Link>
         ))}
       </nav>
 
-      <div className="mt-6 flex items-center gap-3 rounded-xl border border-border bg-card p-3 shadow-[var(--shadow-card)]">
-        <span className="flex size-10 items-center justify-center rounded-full bg-primary text-sm font-medium text-primary-foreground">
+      <div className="mt-6 flex items-center gap-3 rounded-xl border border-sidebar-border bg-sidebar-accent p-3">
+        <span className="flex size-10 items-center justify-center rounded-full bg-sidebar-primary text-sm font-semibold text-sidebar-primary-foreground">
           {iniciais}
         </span>
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium">{perfil.nome}</p>
-          <p className="truncate text-xs text-muted-foreground">{user?.email ?? perfil.instagram}</p>
+          <p className="truncate text-xs text-sidebar-foreground/50">{user?.email ?? perfil.instagram}</p>
         </div>
-        <Button size="icon" variant="ghost" className="size-8 shrink-0" aria-label="Sair" title="Sair" onClick={async () => { await queryClient.cancelQueries(); queryClient.clear(); await supabase.auth.signOut(); onNavigate?.(); await navigate({ to: "/auth", replace: true }); }}><LogOut className="size-4" /></Button>
+        <Button size="icon" variant="ghost" className="size-8 shrink-0 text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-foreground" aria-label="Sair" title="Sair" onClick={async () => { await queryClient.cancelQueries(); queryClient.clear(); await supabase.auth.signOut(); onNavigate?.(); await navigate({ to: "/auth", replace: true }); }}><LogOut className="size-4" /></Button>
       </div>
     </div>
   );
@@ -94,7 +94,7 @@ export function AppLayout({
 
   return (
     <div className="min-h-screen bg-background">
-      <aside className="fixed inset-y-0 left-0 hidden w-64 border-r border-border lg:block">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-sidebar-border lg:block">
         <Nav />
       </aside>
 
@@ -105,30 +105,32 @@ export function AppLayout({
             onClick={() => setAberto(false)}
             aria-hidden
           />
-          <div className="absolute inset-y-0 left-0 w-64 border-r border-border shadow-soft">
+          <div className="absolute inset-y-0 left-0 w-[min(19rem,88vw)] border-r border-sidebar-border shadow-soft">
             <Nav onNavigate={() => setAberto(false)} />
           </div>
         </div>
       )}
 
       <main className={cn("lg:pl-64")}>
-        <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border/70 px-5 py-6 sm:px-9">
+        <header className="sticky top-0 z-20 flex min-h-20 flex-wrap items-center justify-between gap-4 border-b border-border/70 bg-background/85 px-4 py-4 backdrop-blur-xl sm:px-8 lg:px-10">
           <div className="flex items-center gap-3">
-            <button
-              className="rounded-xl border border-border p-2 lg:hidden"
+            <Button
+              size="icon"
+              variant="outline"
+              className="lg:hidden"
               onClick={() => setAberto(true)}
               aria-label="Abrir menu"
             >
               <Menu className="size-4" />
-            </button>
+            </Button>
             <div>
-              <h1 className="text-2xl font-semibold sm:text-3xl">{titulo}</h1>
-              {descricao && <p className="text-sm text-muted-foreground">{descricao}</p>}
+              <h1 className="text-xl font-semibold sm:text-2xl">{titulo}</h1>
+              {descricao && <p className="mt-0.5 text-xs text-muted-foreground sm:text-sm">{descricao}</p>}
             </div>
           </div>
           {acoes}
         </header>
-        <div className="px-5 pt-6 pb-12 sm:px-9">{children}</div>
+        <div className="px-4 pt-5 pb-12 sm:px-8 sm:pt-7 lg:px-10">{children}</div>
       </main>
     </div>
   );
@@ -144,7 +146,7 @@ export function Card({
   return (
     <div
       className={cn(
-        "rounded-xl border border-border bg-card p-5 shadow-[var(--shadow-card)]",
+        "rounded-xl border border-border/85 bg-card p-5 shadow-[var(--shadow-card)] transition-[border-color,box-shadow,transform] duration-200 hover:border-primary/20 hover:shadow-[var(--shadow-soft)]",
         className,
       )}
     >
@@ -167,12 +169,13 @@ export function Metric({
   icon?: ReactNode;
 }) {
   return (
-    <Card>
+    <Card className="relative overflow-hidden">
+      <span className="absolute inset-x-0 top-0 h-0.5 bg-primary" />
       <div className="flex items-start justify-between gap-3">
-        <p className="text-xs font-semibold text-muted-foreground uppercase">{label}</p>
-        {icon && <span className="flex size-8 items-center justify-center rounded-lg bg-accent text-primary">{icon}</span>}
+        <p className="text-[11px] font-bold text-muted-foreground uppercase">{label}</p>
+        {icon && <span className="flex size-9 items-center justify-center rounded-lg bg-accent text-primary ring-1 ring-primary/10">{icon}</span>}
       </div>
-      <p className="mt-3 font-display text-3xl font-semibold">{value}</p>
+      <p className="mt-4 font-display text-2xl font-semibold sm:text-3xl">{value}</p>
       <div className="mt-1 flex items-center gap-2 text-xs">
         {trend && <span className="font-semibold text-primary">{trend}</span>}
         {hint && <span className="text-muted-foreground">{hint}</span>}

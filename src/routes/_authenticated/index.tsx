@@ -75,7 +75,7 @@ function Dashboard() {
 
   return (
     <AppLayout titulo="Dashboard" descricao="Sua operação, clientes e resultados em um só lugar.">
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
         <Metric label="Clientes" value={String(clientes.length)} trend="+8%" hint="vs. mês anterior" icon={<Users className="size-4" />} />
         <Metric label="Agendamentos hoje" value={String(doDia.length)} hint={proximoLivre ? `livre às ${proximoLivre}` : "agenda completa"} icon={<CalendarCheck className="size-4" />} />
         <Metric label="Atendimentos no mês" value={String(doMes.length)} trend="+12%" hint="vs. mês anterior" icon={<Receipt className="size-4" />} />
@@ -83,18 +83,18 @@ function Dashboard() {
         <Metric label="Ticket médio" value={brl(ticket)} hint="por atendimento" icon={<Clock3 className="size-4" />} />
       </div>
 
-      <section className="mt-6">
+      <section className="mt-7">
         <div className="mb-3 flex items-end justify-between">
           <div><p className="text-xs font-semibold text-primary uppercase">Visão do negócio</p><h2 className="mt-1 text-xl font-semibold">Pulso do estúdio</h2></div>
           <p className="hidden text-xs text-muted-foreground sm:block">Atualizado com os atendimentos registrados</p>
         </div>
-        <div className="grid overflow-hidden rounded-xl border border-border bg-card shadow-[var(--shadow-card)] sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid overflow-hidden rounded-xl border border-border/85 bg-card shadow-[var(--shadow-card)] sm:grid-cols-2 xl:grid-cols-4">
           {[
             ["Clientes ativos", String(clientesAtivos)],
             ["Clientes inativos", String(clientes.length - clientesAtivos)],
             ["Taxa de cancelamento", `${taxaCancelamento.toFixed(1)}%`],
             ["Serviço mais vendido", servicos[0]?.nome ?? "—"],
-          ].map(([label, value]) => <div key={label} className="border-b border-border p-5 last:border-0 sm:border-r xl:border-b-0"><p className="text-xs text-muted-foreground">{label}</p><p className="mt-2 font-display text-xl font-semibold">{value}</p></div>)}
+          ].map(([label, value], index) => <div key={label} className="relative border-b border-border p-5 last:border-0 sm:border-r xl:border-b-0"><span className="absolute left-0 top-5 h-8 w-0.5 bg-primary/70" /><p className="pl-3 text-[11px] font-semibold text-muted-foreground uppercase">{label}</p><p className="mt-2 pl-3 font-display text-xl font-semibold">{value}</p>{index === 1 && <span className="absolute right-4 top-4 rounded-full bg-accent px-2 py-1 text-[10px] font-bold text-accent-foreground">REATIVAR</span>}</div>)}
         </div>
       </section>
 
