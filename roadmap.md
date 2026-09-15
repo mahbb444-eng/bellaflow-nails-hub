@@ -6,3 +6,11 @@
 - [x] Criar cadastro, edição e exclusão de despesas
 - [x] Exibir despesas e lucro líquido no Financeiro
 - [x] Validar acesso, isolamento e telas em computador e celular
+
+## Refinamento visual incremental
+
+- [x] Aplicar identidade Framboesa Premium e tipografia Sora/Manrope
+- [x] Refinar navegação, cabeçalho, botões, cards, bordas e sombras
+- [x] Reforçar a hierarquia visual do Dashboard
+- [ ] Validar e ajustar a experiência visual no celular
+- [ ] Criar símbolo minimalista da marca, somente se houver saldo suficiente
