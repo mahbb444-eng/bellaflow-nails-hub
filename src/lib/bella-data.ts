@@ -67,7 +67,7 @@ export const SERVICOS_PADRAO: Servico[] = [
 ];
 
 export const PERFIL_PADRAO: Perfil = {
-  nome: "Camila Rocha",
+  nome: "",
   estudio: "BellaFlow Nail Studio",
   telefone: "(11) 98812-4477",
   instagram: "@camila.nails",

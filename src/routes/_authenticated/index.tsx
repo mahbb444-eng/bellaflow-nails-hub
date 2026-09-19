@@ -12,6 +12,8 @@ import {
   YAxis,
 } from "recharts";
 import { CalendarCheck, CircleDollarSign, Clock3, Receipt, Users } from "lucide-react";
+import { Copy, MessageCircle } from "lucide-react";
+import { toast } from "sonner";
 import { AppLayout, Card, Metric } from "@/components/AppLayout";
 import { StatusBadge } from "@/components/StatusBadge";
 import { useBella } from "@/lib/bella-store";
@@ -72,6 +74,20 @@ function Dashboard() {
   const clientesAtivos = new Set(
     atendimentos.filter((a) => new Date(`${a.data}T00:00:00`) >= limite).map((a) => a.clienteId),
   ).size;
+
+  const mensagemReativacao = (nome: string) => {
+    const primeiroNome = nome.trim().split(" ")[0] || nome;
+    return `Oi, ${primeiroNome}! 💕 Lembrei de você esses dias e percebi que já faz um tempinho desde o seu último atendimento. 🥰 Que tal reservar um horário para cuidar das suas unhas e tirar um tempinho para você? Se quiser, posso te passar os horários disponíveis dessa semana. 💅✨`;
+  };
+
+  const copiarMensagem = async (nome: string) => {
+    try {
+      await navigator.clipboard.writeText(mensagemReativacao(nome));
+      toast.success("Mensagem copiada!");
+    } catch {
+      toast.error("Não foi possível copiar a mensagem");
+    }
+  };
 
   return (
     <AppLayout titulo="Dashboard" descricao="Sua operação, clientes e resultados em um só lugar.">
@@ -163,9 +179,16 @@ function Dashboard() {
           <div className="flex items-center justify-between"><div><p className="text-xs font-semibold text-primary uppercase">Relacionamento</p><h2 className="mt-1 text-xl font-semibold">Clientes para reativar</h2></div><span className="text-xs text-muted-foreground">+30 dias</span></div>
           <div className="mt-4 divide-y divide-border">
             {reativar.map(({ cliente, ultimo }) => (
-              <div key={cliente.id} className="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0">
-                <div className="min-w-0"><p className="truncate text-sm font-semibold">{cliente.nome}</p><p className="truncate text-xs text-muted-foreground">{ultimo ? `Último: ${ultimo.servico}` : "Ainda sem atendimento"}</p></div>
-                <Button asChild size="sm" variant="outline"><Link to="/clientes" search={{ cliente: cliente.id }}>Ver cliente</Link></Button>
+              <div key={cliente.id} className="py-4 first:pt-0 last:pb-0">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="min-w-0"><p className="truncate text-sm font-semibold">{cliente.nome}</p><p className="truncate text-xs text-muted-foreground">{ultimo ? `Último: ${ultimo.servico}` : "Ainda sem atendimento"}</p></div>
+                  <Button asChild size="sm" variant="outline"><Link to="/clientes" search={{ cliente: cliente.id }}>Ver cliente</Link></Button>
+                </div>
+                <div className="mt-3 rounded-lg border border-primary/15 bg-accent/55 p-3">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-primary"><MessageCircle className="size-3.5" />Mensagem para WhatsApp</div>
+                  <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{mensagemReativacao(cliente.nome)}</p>
+                  <Button className="mt-3" size="sm" variant="outline" onClick={() => void copiarMensagem(cliente.nome)}><Copy className="size-3.5" />Copiar mensagem</Button>
+                </div>
               </div>
             ))}
           </div>

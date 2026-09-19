@@ -32,7 +32,8 @@ function Nav({ onNavigate }: { onNavigate?: () => void }) {
   const { user } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const iniciais = perfil.nome
+  const nomeExibido = perfil.nome.trim() || "Minha conta";
+  const iniciais = nomeExibido
     .split(" ")
     .slice(0, 2)
     .map((p) => p[0])
@@ -70,7 +71,7 @@ function Nav({ onNavigate }: { onNavigate?: () => void }) {
           {iniciais}
         </span>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-medium">{perfil.nome}</p>
+           <p className="truncate text-sm font-medium">{nomeExibido}</p>
           <p className="truncate text-xs text-sidebar-foreground/50">{user?.email ?? perfil.instagram}</p>
         </div>
         <Button size="icon" variant="ghost" className="size-8 shrink-0 text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-foreground" aria-label="Sair" title="Sair" onClick={async () => { await queryClient.cancelQueries(); queryClient.clear(); await supabase.auth.signOut(); onNavigate?.(); await navigate({ to: "/auth", replace: true }); }}><LogOut className="size-4" /></Button>

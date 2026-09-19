@@ -66,6 +66,11 @@ function estadoInicial(hoje: Date): Estado {
   };
 }
 
+function removerNomeDemonstrativo(estado: Estado): Estado {
+  if (estado.perfil.nome !== "Camila Rocha") return estado;
+  return { ...estado, perfil: { ...estado.perfil, nome: "" } };
+}
+
 const novoId = (p: string) => `${p}${Math.random().toString(36).slice(2, 9)}`;
 
 export function BellaProvider({ children }: { children: ReactNode }) {
@@ -117,7 +122,7 @@ export function BellaProvider({ children }: { children: ReactNode }) {
         if (saveError) console.error(saveError);
         else localStorage.removeItem(KEY);
       }
-      setEstado(next);
+      setEstado(removerNomeDemonstrativo(next));
       setCarregando(false);
       setProntoParaSalvar(true);
     };
