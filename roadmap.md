@@ -17,6 +17,6 @@
 
 ## Reativação e identificação da conta
 
-- [ ] Adicionar mensagem personalizada de reativação com ação de copiar
-- [ ] Remover o nome demonstrativo das contas novas e existentes
-- [ ] Validar as duas alterações sem iniciar novo refinamento visual
+- [x] Adicionar mensagem personalizada de reativação com ação de copiar
+- [x] Remover o nome demonstrativo das contas novas e existentes
+- [x] Validar as duas alterações sem iniciar novo refinamento visual
