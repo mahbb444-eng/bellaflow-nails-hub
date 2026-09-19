@@ -14,3 +14,9 @@
 - [x] Reforçar a hierarquia visual do Dashboard
 - [ ] Validar e ajustar a experiência visual no celular
 - [ ] Criar símbolo minimalista da marca, somente se houver saldo suficiente
+
+## Reativação e identificação da conta
+
+- [ ] Adicionar mensagem personalizada de reativação com ação de copiar
+- [ ] Remover o nome demonstrativo das contas novas e existentes
+- [ ] Validar as duas alterações sem iniciar novo refinamento visual
