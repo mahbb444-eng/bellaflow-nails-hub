@@ -1,10 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { ptBR } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout, Card } from "@/components/AppLayout";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -62,18 +64,21 @@ function AgendaPage() {
     removerAgendamento,
     marcarRealizado,
   } = useBella();
-  const [modo, setModo] = useState<"semana" | "dia">("semana");
+  const [modo, setModo] = useState<"mês" | "semana" | "dia">("mês");
   const [offset, setOffset] = useState(0);
+  const [diaSelecionado, setDiaSelecionado] = useState(hoje);
   const [form, setForm] = useState<(Omit<Agendamento, "id"> & { id?: string }) | null>(null);
   const [excluir, setExcluir] = useState<Agendamento | null>(null);
 
   const base = useMemo(() => {
     const d = new Date(hoje + "T00:00:00");
+    if (modo === "mês") return new Date(d.getFullYear(), d.getMonth() + offset, 1);
     d.setDate(d.getDate() + offset * (modo === "semana" ? 7 : 1));
     return d;
   }, [hoje, offset, modo]);
 
   const dias = useMemo(() => {
+    if (modo === "mês") return [diaSelecionado];
     if (modo === "dia") return [toISO(base)];
     const ini = inicioDaSemana(base);
     return Array.from({ length: 7 }, (_, i) => {
@@ -81,7 +86,19 @@ function AgendaPage() {
       d.setDate(ini.getDate() + i);
       return toISO(d);
     });
-  }, [base, modo]);
+  }, [base, modo, diaSelecionado]);
+
+  const agendamentosDoDia = agendamentos
+    .filter((a) => a.data === diaSelecionado)
+    .sort((a, b) => a.hora.localeCompare(b.hora));
+  const horariosDoDia = [...new Set([...SLOTS, ...agendamentosDoDia.map((a) => a.hora)])].sort();
+  const diasComAgendamento = new Set(agendamentos.map((a) => a.data));
+
+  const mudarMes = (mes: Date) => {
+    const hojeData = new Date(hoje + "T00:00:00");
+    setOffset((mes.getFullYear() - hojeData.getFullYear()) * 12 + mes.getMonth() - hojeData.getMonth());
+    setDiaSelecionado(toISO(new Date(mes.getFullYear(), mes.getMonth(), 1)));
+  };
 
   const novo = (data: string, hora: string) =>
     setForm({
@@ -96,7 +113,9 @@ function AgendaPage() {
     });
 
   const periodo =
-    modo === "dia"
+    modo === "mês"
+      ? base.toLocaleDateString("pt-BR", { month: "long", year: "numeric" })
+      : modo === "dia"
       ? dataBR(dias[0]!)
       : `${dataBR(dias[0]!)} — ${dataBR(dias[dias.length - 1]!)}`;
 
@@ -107,34 +126,85 @@ function AgendaPage() {
       acoes={
           <div className="flex flex-wrap items-center justify-end gap-2">
           <div className="flex rounded-lg border border-border bg-card p-1">
-            {(["semana", "dia"] as const).map((m) => (
-              <button
+            {(["mês", "semana", "dia"] as const).map((m) => (
+              <Button
                 key={m}
+                variant="ghost"
+                size="sm"
                 onClick={() => {
                   setModo(m);
                   setOffset(0);
+                  setDiaSelecionado(hoje);
                 }}
                 className={cn(
-                  "rounded-md px-3 py-1.5 text-xs font-semibold capitalize transition-colors",
-                  modo === m ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-accent",
+                  "h-8 rounded-md px-3 text-xs capitalize",
+                  modo === m ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground" : "text-muted-foreground",
                 )}
               >
                 {m}
-              </button>
+              </Button>
             ))}
           </div>
-          <Button variant="outline" size="icon" onClick={() => setOffset((o) => o - 1)}>
+          <Button variant="outline" size="icon" aria-label={modo === "mês" ? "Mês anterior" : "Período anterior"} onClick={() => modo === "mês" ? mudarMes(new Date(base.getFullYear(), base.getMonth() - 1, 1)) : setOffset((o) => o - 1)}>
             <ChevronLeft className="size-4" />
           </Button>
-          <Button variant="outline" size="icon" onClick={() => setOffset((o) => o + 1)}>
+          <Button variant="outline" size="icon" aria-label={modo === "mês" ? "Próximo mês" : "Próximo período"} onClick={() => modo === "mês" ? mudarMes(new Date(base.getFullYear(), base.getMonth() + 1, 1)) : setOffset((o) => o + 1)}>
             <ChevronRight className="size-4" />
           </Button>
-          <Button onClick={() => novo(dias[0]!, "09:00")}>
+          <Button onClick={() => novo(dias[0]!, modo === "mês" ? SLOTS.find((slot) => !agendamentosDoDia.some((a) => a.hora === slot)) ?? "09:00" : "09:00")}>
             <Plus className="size-4" /> Novo agendamento
           </Button>
         </div>
       }
     >
+      {modo === "mês" && (
+        <div className="grid gap-5 xl:grid-cols-[minmax(0,430px)_minmax(0,1fr)]">
+          <Card className="min-w-0 p-3 sm:p-5">
+            <Calendar
+              mode="single"
+              month={base}
+              onMonthChange={mudarMes}
+              selected={new Date(diaSelecionado + "T00:00:00")}
+              onSelect={(date) => date && setDiaSelecionado(toISO(date))}
+              locale={ptBR}
+              showOutsideDays={false}
+              modifiers={{ booked: (date) => diasComAgendamento.has(toISO(date)) }}
+              modifiersClassNames={{ booked: "[&>button]:relative [&>button]:after:absolute [&>button]:after:bottom-0.5 [&>button]:after:size-1 [&>button]:after:rounded-full [&>button]:after:bg-primary data-[selected=true]:[&>button]:after:bg-primary-foreground" }}
+              className="w-full bg-transparent p-0 [--cell-size:clamp(2rem,7vw,2.75rem)] [&_.rdp-months]:w-full [&_.rdp-month]:w-full"
+            />
+            <p className="mt-4 flex items-center gap-2 border-t border-border pt-3 text-xs text-muted-foreground"><span className="size-1.5 rounded-full bg-primary" /> Dia com agendamento</p>
+          </Card>
+          <div className="min-w-0">
+            <div className="mb-4 flex items-baseline justify-between gap-3">
+              <h2 className="font-display text-lg font-semibold capitalize">{new Date(diaSelecionado + "T00:00:00").toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })}</h2>
+              <span className="shrink-0 text-xs text-muted-foreground">{agendamentosDoDia.length} {agendamentosDoDia.length === 1 ? "agendamento" : "agendamentos"}</span>
+            </div>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 2xl:grid-cols-4">
+              {horariosDoDia.map((hora) => {
+                const ocupante = agendamentosDoDia.find((a) => a.hora === hora);
+                return (
+                  <Button
+                    key={hora}
+                    variant="outline"
+                    aria-label={ocupante ? `${hora} ocupado, editar agendamento de ${nomeCliente(ocupante.clienteId)}` : `${hora} disponível`}
+                    aria-pressed={form?.data === diaSelecionado && form?.hora === hora}
+                    onClick={() => ocupante ? setForm(ocupante) : novo(diaSelecionado, hora)}
+                    className={cn(
+                      "h-16 min-w-0 flex-col items-start gap-0.5 px-3 text-left text-xs",
+                      ocupante ? "border-primary/25 bg-accent/60 hover:bg-accent" : "border-border hover:border-primary/40",
+                      form?.data === diaSelecionado && form?.hora === hora && "ring-2 ring-primary",
+                    )}
+                  >
+                    <span className="text-sm font-semibold">{hora}</span>
+                    <span className="max-w-full truncate font-normal text-muted-foreground">{ocupante ? `Ocupado · ${nomeCliente(ocupante.clienteId)}` : "Disponível"}</span>
+                  </Button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+      {modo !== "mês" && (
       <div
         className={cn(
           "grid gap-4",
@@ -223,6 +293,7 @@ function AgendaPage() {
           );
         })}
       </div>
+      )}
 
       <Dialog open={!!form} onOpenChange={(o) => !o && setForm(null)}>
         <DialogContent className="rounded-2xl sm:max-w-lg">

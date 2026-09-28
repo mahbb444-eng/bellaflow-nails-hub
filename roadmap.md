@@ -20,3 +20,8 @@
 - [x] Adicionar mensagem personalizada de reativação com ação de copiar
 - [x] Remover o nome demonstrativo das contas novas e existentes
 - [x] Validar as duas alterações sem iniciar novo refinamento visual
+
+## Agenda mensal
+
+- [x] Adicionar calendário mensal e horários livres/ocupados sem remover semana e dia
+- [x] Validar abertura do agendamento e apresentação no celular
