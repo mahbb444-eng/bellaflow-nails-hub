@@ -23,5 +23,5 @@
 
 ## Agenda mensal
 
-- [ ] Adicionar calendário mensal e horários livres/ocupados sem remover semana e dia
-- [ ] Validar abertura do agendamento e apresentação no celular
+- [x] Adicionar calendário mensal e horários livres/ocupados sem remover semana e dia
+- [x] Validar abertura do agendamento e apresentação no celular
