@@ -53,6 +53,18 @@ const DIAS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 const STATUS: Status[] = ["Agendado", "Confirmado", "Realizado", "Cancelado"];
 const SLOTS = ["08:00", "09:00", "10:30", "13:00", "14:30", "16:00", "17:30", "19:00"];
 
+const minutos = (hora: string) => {
+  if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(hora)) return NaN;
+  const [h, m] = hora.split(":").map(Number);
+  return h * 60 + m;
+};
+
+const horarioTermino = (inicio: string, duracao: number) => {
+  const total = minutos(inicio) + duracao;
+  if (!Number.isFinite(total) || total < 0 || total >= 24 * 60) return "";
+  return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
+};
+
 function AgendaPage() {
   const {
     clientes,
@@ -68,6 +80,7 @@ function AgendaPage() {
   const [offset, setOffset] = useState(0);
   const [diaSelecionado, setDiaSelecionado] = useState(hoje);
   const [form, setForm] = useState<(Omit<Agendamento, "id"> & { id?: string }) | null>(null);
+  const [termino, setTermino] = useState("");
   const [excluir, setExcluir] = useState<Agendamento | null>(null);
 
   const base = useMemo(() => {
@@ -100,17 +113,25 @@ function AgendaPage() {
     setDiaSelecionado(toISO(new Date(mes.getFullYear(), mes.getMonth(), 1)));
   };
 
-  const novo = (data: string, hora: string) =>
+  const novo = (data: string, hora: string) => {
+    const duracao = servicos[0]?.duracao ?? 60;
+    setTermino(horarioTermino(hora, duracao));
     setForm({
       clienteId: clientes[0]?.id ?? "",
       servico: servicos[0]?.nome ?? "",
       data,
       hora,
-      duracao: servicos[0]?.duracao ?? 60,
+      duracao,
       valor: servicos[0]?.preco ?? 0,
       observacoes: "",
       status: "Agendado",
     });
+  };
+
+  const editar = (agendamento: Agendamento) => {
+    setTermino(horarioTermino(agendamento.hora, agendamento.duracao));
+    setForm(agendamento);
+  };
 
   const periodo =
     modo === "mês"
@@ -188,7 +209,7 @@ function AgendaPage() {
                     variant="outline"
                     aria-label={ocupante ? `${hora} ocupado, editar agendamento de ${nomeCliente(ocupante.clienteId)}` : `${hora} disponível`}
                     aria-pressed={form?.data === diaSelecionado && form?.hora === hora}
-                    onClick={() => ocupante ? setForm(ocupante) : novo(diaSelecionado, hora)}
+                    onClick={() => ocupante ? editar(ocupante) : novo(diaSelecionado, hora)}
                     className={cn(
                       "h-16 min-w-0 flex-col items-start gap-0.5 px-3 text-left text-xs",
                       ocupante ? "border-primary/25 bg-accent/60 hover:bg-accent" : "border-border hover:border-primary/40",
@@ -240,7 +261,7 @@ function AgendaPage() {
                     <div key={a.id} className={cn("rounded-lg border-l-4 bg-nude/55 p-3", a.status === "Confirmado" && "border-l-primary", a.status === "Agendado" && "border-l-gold", a.status === "Realizado" && "border-l-chart-4", a.status === "Cancelado" && "border-l-destructive opacity-65")}>
                     <div className="flex items-start justify-between gap-2">
                       <button
-                        onClick={() => setForm(a)}
+                          onClick={() => editar(a)}
                         className="min-w-0 text-left"
                         aria-label="Editar agendamento"
                       >
@@ -328,6 +349,7 @@ function AgendaPage() {
                       valor: s?.preco ?? form.valor,
                       duracao: s?.duracao ?? form.duracao,
                     });
+                    setTermino(horarioTermino(form.hora, s?.duracao ?? form.duracao));
                   }}
                   className="mt-1 h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
                 >
@@ -347,11 +369,32 @@ function AgendaPage() {
                 />
               </div>
               <div>
-                <Label>Horário</Label>
+                <Label htmlFor="hora-inicio">Horário de início</Label>
                 <Input
+                  id="hora-inicio"
                   type="time"
+                  step="60"
                   value={form.hora}
-                  onChange={(e) => setForm({ ...form, hora: e.target.value })}
+                  onChange={(e) => {
+                    const hora = e.target.value;
+                    const duracao = minutos(termino) - minutos(hora);
+                    setForm({ ...form, hora, duracao: duracao > 0 ? duracao : form.duracao });
+                  }}
+                />
+              </div>
+              <div>
+                <Label htmlFor="hora-termino">Horário de término</Label>
+                <Input
+                  id="hora-termino"
+                  type="time"
+                  step="60"
+                  value={termino}
+                  onChange={(e) => {
+                    const hora = e.target.value;
+                    const duracao = minutos(hora) - minutos(form.hora);
+                    setTermino(hora);
+                    if (duracao > 0) setForm({ ...form, duracao });
+                  }}
                 />
               </div>
               <div>
@@ -359,7 +402,11 @@ function AgendaPage() {
                 <Input
                   type="number"
                   value={form.duracao}
-                  onChange={(e) => setForm({ ...form, duracao: Number(e.target.value) })}
+                  onChange={(e) => {
+                    const duracao = Number(e.target.value);
+                    setForm({ ...form, duracao });
+                    setTermino(horarioTermino(form.hora, duracao));
+                  }}
                 />
               </div>
               <div>
@@ -402,7 +449,16 @@ function AgendaPage() {
                   toast.error("Cadastre uma cliente primeiro");
                   return;
                 }
-                salvarAgendamento(form);
+                if (!Number.isFinite(minutos(form.hora)) || !Number.isFinite(minutos(termino)) || minutos(termino) <= minutos(form.hora)) {
+                  toast.error("Informe horários válidos: o término deve ser após o início");
+                  return;
+                }
+                const duracao = minutos(termino) - minutos(form.hora);
+                if (agendamentos.some((a) => a.id !== form.id && a.data === form.data && a.status !== "Cancelado" && form.status !== "Cancelado" && minutos(form.hora) < minutos(a.hora) + a.duracao && minutos(a.hora) < minutos(termino))) {
+                  toast.error("Este horário conflita com outro agendamento");
+                  return;
+                }
+                salvarAgendamento({ ...form, duracao });
                 setForm(null);
                 toast.success("Agendamento salvo");
               }}
