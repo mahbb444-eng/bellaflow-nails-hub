@@ -28,6 +28,6 @@
 
 ## Ajustes pontuais da Agenda e celular
 
-- [ ] Permitir início e término personalizados no formulário de agendamento
-- [ ] Testar criação, edição e visualizações existentes da Agenda
-- [ ] Adicionar atalho na tela inicial, somente se for simples e seguro
+- [x] Permitir início e término personalizados no formulário de agendamento
+- [x] Testar criação, edição e visualizações existentes da Agenda
+- [x] Adicionar atalho na tela inicial, somente se for simples e seguro

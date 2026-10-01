@@ -10,3 +10,5 @@
 <!-- LOVABLE:END -->
 
 Keep the monthly booking view in the existing Agenda route and reuse the shared Calendar and booking dialog, so week/day editing and account data flow remain unchanged.
+Store custom booking end times as the existing duration in minutes, deriving the displayed end time from start and duration; this keeps existing bookings and account storage compatible.
+Use a manifest and static icons only for phone home-screen installation; no service worker is needed for a shortcut, preserving current online behavior and sessions.
