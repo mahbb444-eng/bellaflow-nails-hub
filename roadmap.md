@@ -25,3 +25,9 @@
 
 - [x] Adicionar calendário mensal e horários livres/ocupados sem remover semana e dia
 - [x] Validar abertura do agendamento e apresentação no celular
+
+## Ajustes pontuais da Agenda e celular
+
+- [x] Permitir início e término personalizados no formulário de agendamento
+- [x] Testar criação, edição e visualizações existentes da Agenda
+- [x] Adicionar atalho na tela inicial, somente se for simples e seguro
