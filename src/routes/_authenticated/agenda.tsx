@@ -56,7 +56,7 @@ const SLOTS = ["08:00", "09:00", "10:30", "13:00", "14:30", "16:00", "17:30", "1
 const minutos = (hora: string) => {
   if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(hora)) return NaN;
   const [h, m] = hora.split(":").map(Number);
-  return h * 60 + m;
+  return (h ?? NaN) * 60 + (m ?? NaN);
 };
 
 const horarioTermino = (inicio: string, duracao: number) => {
